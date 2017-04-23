@@ -1,0 +1,9 @@
+lambda:
+  name: lambda-opsdesk-gsuite
+  zipfile_name: lambda-opsdesk.zip
+  description: Prepare users data as JSON
+  path: .
+  handler: main
+  runtime: python
+  memory_size: 128
+  timeout: 90

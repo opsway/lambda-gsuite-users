@@ -1,0 +1,12 @@
+client_secret.json
+apiclient
+google_api_python_client*
+googleapiclient
+httplib2*
+oauth2client*
+pyasn1*
+rsa*
+six*
+tests
+uritemplate*
+*.zip
