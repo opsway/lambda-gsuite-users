@@ -1,0 +1,9 @@
+lambda:
+  name: lambda-opsdesk-onelogin
+  zipfile_name: lambda-opsdesk-onelogin.zip
+  description: Prepare users data as JSON
+  path: .
+  handler: main
+  runtime: python
+  memory_size: 128
+  timeout: 90
