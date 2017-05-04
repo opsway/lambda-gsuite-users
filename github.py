@@ -3,9 +3,7 @@ import os
 import json
 import boto3
 
-AUTHORIZATION = os.environ.get('Authorization')
-headers = {"Authorization": AUTHORIZATION}
-
+headers = {"Authorization": os.environ.get('Authorization')}
 bucket_name = 'opsway-zohobooks-backup';
 
 def get_members_list():
@@ -33,12 +31,12 @@ def get_members():
 
 
 def get_repos_acl():
-    url = 'https://api.github.com/orgs/opsway/repos?type=private'
+    url = 'https://api.github.com/orgs/opsway/repos'
     
     raw_list = []
     page = 1
     while True:  
-        r = requests.get(url + '&page=' + str(page), headers = headers)
+        r = requests.get(url + '?page=' + str(page), headers = headers)
         result = r.json();
         if (result == []):
             break;
@@ -57,6 +55,7 @@ def get_collaborators():
             repo = {}
             repo['project_name'] = repo_raw['name']
             repo['collaborator'] = item['login']
+            repo['private'] = repo_raw['private']
             repo['fork'] = repo_raw['fork']
             repo['site_admin'] = item['site_admin']
             repo['permissions'] = item['permissions']
@@ -82,7 +81,4 @@ def main(event, context):
 
     key = 'github_project_acl.json'
     s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(get_collaborators()));
-    print 'Uploaded github collaborators'
-  
-    get_presigned_url(key);
-    
+    print 'Uploaded github collaborators'   
