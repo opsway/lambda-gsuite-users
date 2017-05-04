@@ -1,6 +1,6 @@
 lambda:
-  name: lambda-opsdesk-gsuite
-  zipfile_name: lambda-opsdesk-gsuite.zip
+  name: lambda-opsdesk-github
+  zipfile_name: lambda-opsdesk-github.zip
   description: Prepare users data as JSON
   path: .
   handler: main

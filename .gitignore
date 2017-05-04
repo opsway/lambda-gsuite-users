@@ -11,3 +11,11 @@ tests
 uritemplate*
 *.zip
 requests*
+boto*
+concurrent*
+dateutil*
+docutils*
+jmespath*
+python_date*
+s3transfer*
+futures*
