@@ -1,9 +1,0 @@
-lambda:
-  name: jira-set-onduty
-  zipfile_name: jira-set-onduty.zip
-  description: 
-  path: .
-  handler: main
-  runtime: python
-  memory_size: 128
-  timeout: 90
