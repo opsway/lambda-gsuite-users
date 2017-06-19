@@ -19,3 +19,12 @@ jmespath*
 python_date*
 s3transfer*
 futures*
+appdirs*
+cachetools*
+easy_install*
+google*
+packaging*
+pkg_resources*
+protobuf*
+pyparsing*
+setuptools*
