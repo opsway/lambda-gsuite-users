@@ -196,6 +196,6 @@ def main(event, context):
     print 'Uploaded jira shared filters'
     
     key = 'Jira_project_permissions.json'
-    s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(shared_filters()));
+    s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(project_permissions()));
     print 'Uploaded jira project permissions'
 
