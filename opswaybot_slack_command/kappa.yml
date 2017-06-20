@@ -1,0 +1,13 @@
+name: opswaybot_slack_command
+environments:
+  dev:
+    region: us-east-1
+    role: 
+      name: lambda_sns_opswaybot
+lambda:
+  description: Routes OpsWayBot slack commands to SNS topic
+  path: .
+  handler: command.main
+  runtime: python
+  memory_size: 128
+  timeout: 90

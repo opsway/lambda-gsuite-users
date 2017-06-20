@@ -1,0 +1,13 @@
+name: opswaybot-sns-processor
+environments:
+  dev:
+    region: us-east-1
+    role: 
+      name: lambda_sns_opswaybot
+lambda:
+  description: Incapsulate logic for SNS messages processing from OpsWay Slack Bot
+  path: .
+  handler: sns_processor.main
+  runtime: python
+  memory_size: 128
+  timeout: 60
