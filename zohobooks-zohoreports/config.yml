@@ -1,0 +1,15 @@
+lambda:
+  name: zohobooks-zohoreports
+  zipfile_name: zohobooks-zohoreports.zip
+  description: ZohoBooks export to ZohoReports
+  path: .
+  handler: main
+  runtime: python
+  memory_size: 128
+  timeout: 3
+  event_sources:
+   -
+      arn: arn:aws:s3:::test-1245812163
+      events:
+        - s3:ObjectCreated:*
+  test_data: input.json

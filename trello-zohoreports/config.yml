@@ -1,0 +1,15 @@
+lambda:
+  name: trello-zohoreports
+  zipfile_name: trello-zohoreports.zip
+  description: Trello ZohoReports converter 
+  path: .
+  handler: main
+  runtime: python
+  memory_size: 128
+  timeout: 90
+  event_sources:
+   -
+      arn: arn:aws:s3:::test-1245812163
+      events:
+        - s3:ObjectCreated:*
+  test_data: input.json

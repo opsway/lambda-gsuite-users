@@ -1,0 +1,16 @@
+env.sh
+*.zip
+
+.DS_Store
+*.zip
+*.pyc
+trello/*
+test*
+six*
+requests_oauthlib*
+pytz*
+oauthlib*
+dateutil*
+requests*
+py_trello*
+python_dateutil*
