@@ -1,9 +1,0 @@
-lambda:
-  name: slack-accesslog
-  zipfile_name: slack-accesslog.zip
-  description: Log user presence to BigQuery
-  path: .
-  handler: main
-  runtime: python
-  memory_size: 128
-  timeout: 90
