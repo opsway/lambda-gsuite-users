@@ -3,7 +3,7 @@ import os
 import json
 import boto3
 
-headers = {"Authorization": os.environ.get('confluence_authorize')}
+headers = {"Authorization": os.environ.get('jira_authorize')}
 bucket_name = 'opsway-zohobooks-backup';
 
 def jira_clients_access ():
