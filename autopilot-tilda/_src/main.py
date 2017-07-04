@@ -54,6 +54,4 @@ def send_data_to_autopilot (formid,email,name=''):
         r = requests.post(autopilot_url, json=data, headers = headers)
         response = r.json();
     
-
-    print response
     return response
