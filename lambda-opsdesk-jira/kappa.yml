@@ -1,0 +1,13 @@
+name: lambda-opsdesk-jira
+environments:
+  dev:
+    region: us-east-1
+    role: 
+      name: lambda_no_permissions
+lambda:
+  description: Download clients permissions from Jira
+  path: .
+  handler: main.process
+  runtime: python
+  memory_size: 128
+  timeout: 90
