@@ -1,0 +1,13 @@
+name: lambda-opsdesk-conflunce
+environments:
+  dev:
+    region: us-east-1
+    role: 
+      name: lambda_zohobooks_backup
+lambda:
+  description: Get users and jira-software-users from spaces permissions
+  path: .
+  handler: main.process
+  runtime: python
+  memory_size: 128
+  timeout: 90
