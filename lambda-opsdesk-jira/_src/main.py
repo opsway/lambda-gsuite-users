@@ -4,88 +4,66 @@ import json
 import boto3
 
 headers = {"Authorization": os.environ.get('jira_authorize')}
-jira_url = 'https://opsway.atlassian.net/rest/api/2/'
+jira_api_path = 'https://opsway.atlassian.net/rest/api/2/'
 bucket_name = 'opsway-zohobooks-backup';
 
-def get_jira_clients_with_pagination ():
-    clients = []
-    opsway_users = []
-    jira_software_users = []
-    jira_servicedesk_users = []
-
+def get_jira_users_from_group_with_pagination(group_name):
+    users = []
+    
     start_at = 0
     max_result = 50
-    j_start_at = 0
-    j_max_result = 50
-    s_start_at = 0
-    s_max_result = 50
-
-
+    
+    url = 'group/member?includeInactiveUsers=false'
+    
     while True:
-        opsway_g = requests.get(jira_url + 'group/member?' + 'includeInactiveUsers=false' + '&startAt=' + str(start_at) + '&maxResults=' + str(max_result) + '&groupname=opsway', headers = headers)
-        opsway = opsway_g.json();
-        if (opsway['values'] == []):
+        r = requests.get(jira_api_path + url + '&startAt=' + str(start_at) +
+                                '&maxResults=' + str(max_result) + '&groupname=' + group_name, headers = headers)
+        result = r.json();
+        if (result['values'] == []):
             break;
-        for user in opsway['values']:
-            result_user = {}
-            result_user['name'] = user['name']
-            opsway_users.append(result_user)
-        start_at = start_at + 50
-        max_result = max_result + 50
-
-    while True:
-        jira_software_g = requests.get(jira_url  + 'group/member?' + 'includeInactiveUsers=false'  + '&startAt=' + str(j_start_at) + '&maxResults=' + str(j_max_result) + '&groupname=jira-software-users', headers = headers)
-        jira_software = jira_software_g.json();
-        if (jira_software['values'] == []):
-            break;
-        for user in jira_software['values']:
-            result_user = {}
-            result_user['name'] = user['name']
-            jira_software_users.append(result_user)
-        j_start_at = j_start_at + 50
-        j_max_result = j_max_result + 50
-
-    while True:
-        jira_servicedesk_g = requests.get(jira_url  + 'group/member?' + 'includeInactiveUsers=false'  + '&startAt=' + str(s_start_at) + '&maxResults=' + str(s_max_result) + '&groupname=jira-servicedesk-users', headers = headers)
-        jira_servicedesk = jira_servicedesk_g.json();
-        if (jira_servicedesk['values'] == []):
-            break;
-        for user in jira_servicedesk['values']:
-            result_user = {}
-            result_user['name'] = user['name']
-            jira_servicedesk_users.append(result_user)
-        s_start_at = s_start_at + 50
-        s_max_result = s_max_result + 50
-
-    for j_user in jira_software_users:
+        for item in result['values']:
+            user = {}
+            user['name'] = item['name']
+            users.append(user)
+        start_at = max_result
+        max_result += 50
+    
+    return users
+    
+def get_only_clients(group_users):
+    opsway_users = []
+    opsway_users += get_jira_users_from_group_with_pagination('opsway')
+    
+    clients = []
+    for user in group_users:
         success = 1
         for o_user in opsway_users:
-            if j_user['name'] == o_user['name']:
+            if user['name'] == o_user['name']:
                 success = 0
                 break;
         if success == 1:
             users = {}
-            users['name'] = j_user['name']
+            users['name'] = user['name']
             clients.append(users)
-
-    for s_user in jira_servicedesk_users:
-        success = 1
-        for o_user in opsway_users:
-            if s_user['name'] == o_user['name']:
-                success = 0
-                break;
-        if success == 1:
-            users = {}
-            users['name'] = s_user['name']
-            clients.append(users)
-
+    
     return clients
 
-def get_clients_group_membership ():
-    client_groups = []
+
+def get_clients_group_membership():
+    clients = []
     
-    for client in get_jira_clients_with_pagination():
-        r = requests.get(jira_url + 'user?username=' + client['name'] + '&expand=groups' , headers = headers)
+    jira_software_users = []
+    jira_software_users += get_jira_users_from_group_with_pagination('jira-software-users')
+    clients += get_only_clients(jira_software_users)
+    
+    jira_servicedesk_users = []
+    jira_servicedesk_users += get_jira_users_from_group_with_pagination('jira-servicedesk-users')
+    clients += get_only_clients(jira_servicedesk_users)
+    
+    client_groups = []
+
+    for client in clients:
+        r = requests.get(jira_api_path + 'user?username=' + client['name'] + '&expand=groups' , headers = headers)
         result = r.json();
         for group in result['groups']['items']:
             if (group['name'] != 'jira-software-users'):
@@ -94,10 +72,15 @@ def get_clients_group_membership ():
                 error['member_of'] = group['name']
                 client_groups.append(error)
     
+    default_data = {}
+    default_data['client_name'] = 'dummy'
+    default_data['member_of'] = 'dummy'
+    client_groups.append(default_data)
+
     return client_groups
 
 def get_shared_filters ():
-    
+
     boards_url = 'https://opsway.atlassian.net/rest/agile/1.0/board/'
 
     filter_ids = []
@@ -117,9 +100,9 @@ def get_shared_filters ():
         filter_ids.append(filter_id)
 
     share_permissions = []
-    
+
     for item in filter_ids:
-        r = requests.get(jira_url + 'filter/'+ str(item['filter_id']) + '/permission', headers = headers)
+        r = requests.get(jira_api_path + 'filter/'+ str(item['filter_id']) + '/permission', headers = headers)
         result = r.json();
         for s_filter in result:
             if ('group' in s_filter and s_filter['group']['name'] == 'jira-software-users'):
@@ -131,7 +114,16 @@ def get_shared_filters ():
                 filter_permission['filter_id'] = item['filter_id']
                 filter_permission['group'] = s_filter['group']['name']
                 share_permissions.append(filter_permission)
-    
+                
+    default_data = {}
+    default_data['board_name'] = 'dummy'
+    default_data['board_link'] = 'dummy'
+    default_data['board_type'] = 'dummy'
+    default_data['filter_link'] = 'dummy'
+    default_data['filter_id'] = 'dummy'
+    default_data['group'] = 'dummy'
+    share_permissions.append(default_data)
+
     return share_permissions
 
 def get_project_permissions ():
@@ -139,11 +131,11 @@ def get_project_permissions ():
     schemes_permissions = []
     projects_access = []
 
-    r = requests.get(jira_url + 'permissionscheme/', headers = headers)
+    r = requests.get(jira_api_path + 'permissionscheme/', headers = headers)
     result = r.json();
 
     for item in result['permissionSchemes']:
-        r = requests.get(jira_url + 'permissionscheme/' + str(item['id']) + '/permission', headers = headers)
+        r = requests.get(jira_api_path + 'permissionscheme/' + str(item['id']) + '/permission', headers = headers)
         result = r.json();
         for item in result['permissions']:
             schemes_permissions.append(item)
@@ -157,19 +149,27 @@ def get_project_permissions ():
                 access['permission_id'] = item['id']
                 access['permission_name'] = item['permission']
                 projects_access.append(access)
-    return projects_access
     
-def process(event, context):
+    default_data = {}
+    default_data['holder'] = 'dummy'
+    default_data['permission_link'] = 'dummy'
+    default_data['permission_id'] = 'dummy'
+    default_data['permission_name'] = 'dummy'
+    projects_access.append(default_data)
+    
+    return projects_access
+
+def put_data_to_s3_bucket(payload,key,success_message):
     s3 = boto3.resource('s3')
-    key = 'Jira_clients_access.json'
-    s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(get_clients_group_membership()));
-    print 'Uploaded jira clients who have more groups than only Jira-software-users'
+    s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(payload));
+    print success_message
 
-    key = 'Jira_shared_filters.json'
-    s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(get_shared_filters()));
-    print 'Uploaded jira shared filters'
-
-    key = 'Jira_project_permissions.json'
-    s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(get_project_permissions()));
-    print 'Uploaded jira project permissions'
+def process(event, context):
+    clients_group_membership = get_clients_group_membership()
+    shared_filters = get_shared_filters()
+    project_permissions = get_project_permissions()
+    
+    put_data_to_s3_bucket(clients_group_membership,'Jira_clients_access.json','Uploaded jira clients who have more groups than only Jira-software-users')
+    put_data_to_s3_bucket(shared_filters,'Jira_shared_filters.json','Uploaded jira shared filters')
+    put_data_to_s3_bucket(project_permissions,'Jira_project_permissions.json','Uploaded jira project permissions')
 
