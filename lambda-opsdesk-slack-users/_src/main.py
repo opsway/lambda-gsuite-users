@@ -2,13 +2,23 @@ import requests
 import os
 import json
 import boto3
-import csv
 import time
 
 slack_auth = os.environ.get('slack_token')
 slack_url = 'https://slack.com/api/'
 bucket_name = 'opsway-zohobooks-backup'
 
+def channel_id_presence():
+    url = 'https://s3.amazonaws.com/opsway-zohobooks-backup/slack_users.json'
+    
+    r = requests.get(url)
+    result = r.json()
+    
+    for item in result:
+        if item['opswaybot_im_channel'] != '':
+            return True
+        else:
+            return False
 
 def im_open(user_id):
     url = 'im.open'
@@ -37,7 +47,8 @@ def compiling_slack_users_list():
                 and 'is_ultra_restricted' in member and member['is_ultra_restricted'] is False)):
 
             time.sleep(1)
-            direct_channel_id = im_open(member['id'])
+            if channel_id_presence():
+                direct_channel_id = im_open(member['id'])
 
             r = requests.get(slack_url + 'users.profile.get?token=' +
                              slack_auth + '&user=' + member['id'])
