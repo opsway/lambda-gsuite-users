@@ -1,4 +1,4 @@
-name: lambda-opsdesk-conflunce
+name: lambda-opsdesk-confluence
 environments:
   dev:
     region: us-east-1

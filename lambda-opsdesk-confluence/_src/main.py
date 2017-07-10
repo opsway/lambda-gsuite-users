@@ -36,7 +36,7 @@ def get_space_permissions ():
     return result_permissions
 
     
-def get_groups_access ():
+def get_groups_access():
     r = requests.get(confluence_url + 'group?limit=1000', headers = headers)
     result = r.json();
 
@@ -51,10 +51,15 @@ def get_groups_access ():
                     group['space'] = item['space']
                     groups_access.append(group)
     
+    default_data = {}
+    default_data['name'] = 'dummy'
+    default_data['space'] = 'dummy'
+    groups_access.append(default_data)
+    
     return groups_access
 
 
-def get_users_access ():
+def get_users_access():
     r = requests.get(confluence_url + 'group/confluence-users/member?&limit=1000', headers = headers)
     result = r.json();
     
@@ -80,15 +85,21 @@ def get_users_access ():
                     user['space'] = item['space']
                     user_access.append(user) 
     
+    default_data = {}
+    default_data['name'] = 'dummy'
+    default_data['space'] = 'dummy'
+    user_access.append(default_data)
+    
     return user_access
 
+def put_data_to_s3_bucket(payload,key,success_message):
+    s3 = boto3.resource('s3')
+    s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(payload));
+    print success_message
 
 def process(event, context):
-    s3 = boto3.resource('s3')
-    key = 'Confluence_groups_permissions_to_spaces.json'
-    s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(get_groups_access()));
-    print 'Uploaded jira clients who have more groups than only Jira-software-users'
-
-    key = 'Confluence_users_permissions_to_spaces.json'
-    s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(get_users_access()));
-    print 'Uploaded jira shared filters'
+    groups_access = get_groups_access() 
+    users_access = get_users_access() 
+    
+    put_data_to_s3_bucket(groups_access,'Confluence_groups_permissions_to_spaces.json','Uploaded spaces on wich jira-software-users group has access')
+    put_data_to_s3_bucket(users_access,'Confluence_users_permissions_to_spaces.json','Uploaded inactive users that have access to confluence spaces')
