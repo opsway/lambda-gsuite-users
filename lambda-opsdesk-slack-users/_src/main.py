@@ -68,21 +68,16 @@ def compiling_slack_users_list():
             user['updated'] = member['updated']
             user['first_name'] = result['profile']['first_name']
             user['opswaybot_im_channel'] = str(direct_channel_id)
-            if 'has_2fa' in member:
-                user['has_2fa'] = member['has_2fa']
-            if 'last_name' in result['profile'] and result['profile']['last_name'] != '':
-                user['last_name'] = result['profile']['last_name']
-            if 'phone' in result['profile']:
-                user['phone'] = result['profile']['phone']
-            if 'skype' in result['profile']:
-                user['skype'] = result['profile']['skype']
-            if 'real_name' in result['profile']:
-                user['real_name'] = result['profile']['real_name']
-            if 'email' in result['profile']:
-                user['email'] = result['profile']['email']
-            if (result['profile']['fields'] is not None and 'Xf5916FA0L' in result['profile']['fields']):
-                user['github_login'] = result['profile']['fields']['Xf5916FA0L']['value']
+            user['has_2fa'] = member['has_2fa'] if 'has_2fa' in member else ''
+            user['last_name'] = result['profile']['last_name'] if ('last_name' in result['profile'] and result['profile']['last_name'] != '') else ''
+            user['phone'] = result['profile']['phone'] if 'phone' in result['profile'] else ''
+            user['skype'] = result['profile']['skype'] if 'skype' in result['profile'] else ''
+            user['real_name'] = result['profile']['real_name'] if 'real_name' in result['profile'] else ''
+            user['email'] = result['profile']['email'] if 'email' in result['profile'] else ''                
+            user['github_login'] = result['profile']['fields']['Xf5916FA0L']['value'] if (result['profile']['fields'] is not None and 'Xf5916FA0L' in result['profile']['fields']) else ''
+            
             slack_users.append(user)
+    
     return slack_users
 
 
