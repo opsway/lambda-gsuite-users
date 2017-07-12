@@ -17,8 +17,13 @@ def channel_id_presence():
     for item in result:
         if item['opswaybot_im_channel'] != '':
             return True
-        else:
-            return False
+
+def only_paid_accounts(member):
+    if (('is_restricted' in member and member['is_restricted'] is False
+         and 'is_ultra_restricted' in member and member['is_ultra_restricted'] is False)
+        or ('is_restricted' in member and member['is_restricted'] is True
+            and 'is_ultra_restricted' in member and member['is_ultra_restricted'] is False)):
+            return True
 
 def im_open(user_id):
     url = 'im.open'
@@ -30,7 +35,6 @@ def im_open(user_id):
 
     return result['channel']['id']
 
-
 def compiling_slack_users_list():
     r = requests.get(slack_url + 'users.list?token=' + slack_auth)
     result = r.json()
@@ -41,11 +45,7 @@ def compiling_slack_users_list():
     slack_users = []
 
     for member in result['members']:
-        if (('is_restricted' in member and member['is_restricted'] is False
-             and 'is_ultra_restricted' in member and member['is_ultra_restricted'] is False)
-            or ('is_restricted' in member and member['is_restricted'] is True
-                and 'is_ultra_restricted' in member and member['is_ultra_restricted'] is False)):
-
+        if only_paid_accounts(member):
             time.sleep(1)
             if channel_id_presence():
                 direct_channel_id = im_open(member['id'])
@@ -56,17 +56,17 @@ def compiling_slack_users_list():
 
             user = {}
             user['id'] = member['id']
-            user['team_id'] = member['team_id']
             user['name'] = member['name']
+            user['is_bot'] = member['is_bot']
+            user['team_id'] = member['team_id']
             user['deleted'] = member['deleted']
+            user['updated'] = member['updated']
             user['is_admin'] = member['is_admin']
             user['is_owner'] = member['is_owner']
-            user['is_primary_owner'] = member['is_primary_owner']
             user['is_restricted'] = member['is_restricted']
-            user['is_ultra_restricted'] = member['is_ultra_restricted']
-            user['is_bot'] = member['is_bot']
-            user['updated'] = member['updated']
             user['first_name'] = result['profile']['first_name']
+            user['is_primary_owner'] = member['is_primary_owner']
+            user['is_ultra_restricted'] = member['is_ultra_restricted']
             user['opswaybot_im_channel'] = str(direct_channel_id)
             user['has_2fa'] = member['has_2fa'] if 'has_2fa' in member else ''
             user['last_name'] = result['profile']['last_name'] if ('last_name' in result['profile'] and result['profile']['last_name'] != '') else ''
