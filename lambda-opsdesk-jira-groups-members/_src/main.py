@@ -39,9 +39,10 @@ def put_data_to_s3_bucket(payload, key, success_message):
 
 
 def process(event, context):
-    put_data_to_s3_bucket(get_jira_groups_members_with_pagination(
-        'jira-software-users'), 'Jira_software_users.json', 'Uploaded jira-software-users group members')
-    put_data_to_s3_bucket(get_jira_groups_members_with_pagination(
-        'jira-servicedesk-users'), 'Jira_servicedesk_users.json', 'Uploaded jira-servicedesk-users group members')
-    put_data_to_s3_bucket(get_jira_groups_members_with_pagination(
-        'opsway'), 'Jira_opsway_users.json', 'Uploaded opsway group members')
+    jira_software_users = get_jira_groups_members_with_pagination('jira-software-users')
+    jira_servicedesk_users = get_jira_groups_members_with_pagination('jira-servicedesk-users')
+    jira_opsway_users = get_jira_groups_members_with_pagination('opsway')
+    
+    put_data_to_s3_bucket(jira_software_users, 'Jira_software_users.json', 'Uploaded jira-software-users group members')
+    put_data_to_s3_bucket(jira_servicedesk_users, 'Jira_servicedesk_users.json', 'Uploaded jira-servicedesk-users group members')
+    put_data_to_s3_bucket(jira_opsway_users, 'Jira_opsway_users.json', 'Uploaded opsway group members')

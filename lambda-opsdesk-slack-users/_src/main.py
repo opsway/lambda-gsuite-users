@@ -4,7 +4,8 @@ import json
 import boto3
 import time
 
-slack_auth = os.environ.get('slack_token')
+slack_auth = os.environ.get('SLACK_TOKEN')
+slack_bot_auth_token = os.environ.get('SLACK_BOT_TOKEN')
 slack_url = 'https://slack.com/api/'
 bucket_name = 'opsway-zohobooks-backup'
 
@@ -25,15 +26,16 @@ def only_paid_accounts(member):
             and 'is_ultra_restricted' in member and member['is_ultra_restricted'] is False)):
             return True
 
-def im_open(user_id):
+def im_open(user_id,is_bot=False):
     url = 'im.open'
-    r = requests.post(slack_url + url + '?token=' +
-                      slack_auth, data={'user': user_id})
-    result = r.json()
-    if (r.status_code != 200):
-        raise ValueError('Error retrieving data')
-
-    return result['channel']['id']
+    if is_bot is not True:
+        r = requests.post(slack_url + url + '?token=' + slack_bot_auth_token, data={'user': user_id})
+        result = r.json()
+        
+        if (r.status_code != 200):
+            raise ValueError('Error retrieving data')
+    
+        return result['channel']['id']
 
 def compiling_slack_users_list():
     r = requests.get(slack_url + 'users.list?token=' + slack_auth)
@@ -47,8 +49,8 @@ def compiling_slack_users_list():
     for member in result['members']:
         if only_paid_accounts(member):
             time.sleep(1)
-            if channel_id_presence():
-                direct_channel_id = im_open(member['id'])
+            # if channel_id_presence():
+            direct_channel_id = im_open(member['id'],member['is_bot'])
 
             r = requests.get(slack_url + 'users.profile.get?token=' +
                              slack_auth + '&user=' + member['id'])
@@ -73,13 +75,12 @@ def compiling_slack_users_list():
             user['phone'] = result['profile']['phone'] if 'phone' in result['profile'] else ''
             user['skype'] = result['profile']['skype'] if 'skype' in result['profile'] else ''
             user['real_name'] = result['profile']['real_name'] if 'real_name' in result['profile'] else ''
-            user['email'] = result['profile']['email'] if 'email' in result['profile'] else ''                
+            user['email'] = result['profile']['email'] if 'email' in result['profile'] else ''
             user['github_login'] = result['profile']['fields']['Xf5916FA0L']['value'] if (result['profile']['fields'] is not None and 'Xf5916FA0L' in result['profile']['fields']) else ''
-            
-            slack_users.append(user)
-    
-    return slack_users
 
+            slack_users.append(user)
+
+    return slack_users
 
 def process(event, context):
     s3 = boto3.resource('s3')

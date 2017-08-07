@@ -14,7 +14,7 @@ def get_access_token():
     result = r.json()
     return result['data'][0]['access_token']
 
-def get_users(event, context):
+def process(event, context):
     url = 'https://api.us.onelogin.com/api/1/users'
     headers = {"Authorization": "bearer:" + get_access_token()}
     

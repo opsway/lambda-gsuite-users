@@ -1,9 +1,12 @@
+environments:
+  dev:
+    region: us-east-1
+    role: 
+      name: lambda_no_permissions
 lambda:
-  name: lambda-opsdesk-onelogin
-  zipfile_name: lambda-opsdesk-onelogin.zip
-  description: Prepare users data as JSON
+  description: Get opsway users from onelogin
   path: .
-  handler: main
+  handler: main.process
   runtime: python
   memory_size: 128
   timeout: 90
