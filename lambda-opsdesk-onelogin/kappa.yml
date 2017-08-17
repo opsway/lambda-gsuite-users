@@ -9,4 +9,4 @@ lambda:
   handler: main.process
   runtime: python
   memory_size: 128
-  timeout: 90
+  timeout: 180
