@@ -33,7 +33,6 @@ def get_users():
             break;
     return users
 
-get_users()
 def get_roles():
     r = requests.get(onelogin_api_path + 'roles', headers = headers)
     result = r.json();
