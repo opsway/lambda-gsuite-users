@@ -9,8 +9,8 @@ onelogin_api_path = 'https://api.us.onelogin.com/api/1/'
 def get_access_token():
     url = 'https://api.us.onelogin.com/auth/oauth2/token'
     params = {"grant_type":"client_credentials"}
-    client_id = os.environ.get('client_id1')
-    client_secret = os.environ.get('client_secret1')
+    client_id = os.environ.get('client_id')
+    client_secret = os.environ.get('client_secret')
     headers = {"Authorization": "client_id:"+client_id +", client_secret:" + client_secret,
                 "Content-Type": "application/json"
             }
