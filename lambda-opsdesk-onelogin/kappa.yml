@@ -2,7 +2,7 @@ environments:
   dev:
     region: us-east-1
     role: 
-      name: lambda_no_permissions
+      name: lambda_zohobooks_backup
 lambda:
   description: Get opsway users from onelogin
   path: .
