@@ -1,9 +1,9 @@
 import requests
 import os
 import json
-# import boto3
+import boto3
 
-# bucket_name = 'opsway-zohobooks-backup'
+bucket_name = 'opsway-zohobooks-backup'
 onelogin_api_path = 'https://api.us.onelogin.com/api/1/'
 
 def get_access_token():
@@ -21,7 +21,7 @@ def get_access_token():
 headers = {"Authorization": "bearer:" + get_access_token()}
 
 def get_users():
-    url = 'https://api.us.onelogin.com/api/1/users'
+    url = onelogin_api_path + 'users'
     
     users = []
     while True:
@@ -33,6 +33,7 @@ def get_users():
             break;
     return users
 
+get_users()
 def get_roles():
     r = requests.get(onelogin_api_path + 'roles', headers = headers)
     result = r.json();
