@@ -28,17 +28,18 @@ def get_all_users():
         raw_list['employee_role'] = user['Employee Role']
         raw_list['approval_status'] = user['ApprovalStatus']
         raw_list['birth_date'] = user['Birth Date']
+        raw_list['owner_id'] = user['ownerID']
         zoho_people_users.append(raw_list)
-    
+
     return zoho_people_users
-    
+
 def get_user_goals():
     url = 'forms/P_Goals/getRecords'
     r = requests.get(zoho_people_api_url + url + '?authtoken=' + zoho_people_auth)
     result = r.json()
-    
+
     user_goals = []
-    
+
     for goal in result['response']['result']:
         goals = {}
         goals['goal_name'] = goal.items()[0][1][0]['GoalName']
@@ -53,7 +54,7 @@ def get_user_goals():
         goals['assigned_to_id'] = goal.items()[0][1][0]['AssignedTo.ID']
         goals['created_time'] = goal.items()[0][1][0]['CreatedTime']
         user_goals.append(goals)
-    
+
     return user_goals
 
 def put_data_to_s3_bucket(payload, key, success_message):
@@ -65,5 +66,4 @@ def put_data_to_s3_bucket(payload, key, success_message):
 def process(event, context):
     put_data_to_s3_bucket(get_all_users(), 'ZohoPeople_users.json', 'Uploaded ZohoPeople users list.')
     put_data_to_s3_bucket(get_user_goals(), 'ZohoPeople_users_goals.json', 'Uploaded ZohoPeople users goals.')
-    
-    
+
