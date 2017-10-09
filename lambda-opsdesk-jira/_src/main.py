@@ -120,7 +120,7 @@ def get_shared_filters ():
     default_data['board_link'] = 'dummy'
     default_data['board_type'] = 'dummy'
     default_data['filter_link'] = 'dummy'
-    default_data['filter_id'] = 'dummy'
+    default_data['filter_id'] = 999999
     default_data['group'] = 'dummy'
     share_permissions.append(default_data)
 
@@ -153,7 +153,7 @@ def get_project_permissions ():
     default_data = {}
     default_data['holder'] = 'dummy'
     default_data['permission_link'] = 'dummy'
-    default_data['permission_id'] = 'dummy'
+    default_data['permission_id'] = 999999
     default_data['permission_name'] = 'dummy'
     projects_access.append(default_data)
     
