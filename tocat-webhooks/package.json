@@ -1,0 +1,14 @@
+{
+  "name": "opsdesk-webhooks",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "~1.18.2",
+    "express": "~4.15.5",
+    "express-basicauth": "^1.0.2",
+    "mysql": "*"
+  }
+}
