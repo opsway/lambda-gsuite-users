@@ -27,7 +27,15 @@ def main(event, context):
 
     results = service.users().list(domain='opsway.com',
         orderBy='email').execute()
+    
+    alias_domain_results = service.users().list(domain='ops-way.com',
+        orderBy='email').execute()
+    
+    alias_domain_users = alias_domain_results.get('users', [])
+    
     users = results.get('users', [])
+    
+    users = users + alias_domain_users
 
     result_users = []
     if not users:
