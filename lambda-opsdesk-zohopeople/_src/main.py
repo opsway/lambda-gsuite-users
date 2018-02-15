@@ -21,7 +21,7 @@ def get_all_users():
         raw_list['last_name'] = user['Last Name']
         raw_list['email'] = user['Email ID']
         raw_list['reporting_to'] = user['Reporting To']
-        raw_list['job_description'] = user['Job Description']
+        raw_list['title'] = user['Title']
         raw_list['date_of_joining'] = user['Date of joining']
         raw_list['employee_status'] = user['Employee Status']
         raw_list['department'] = user['Department']

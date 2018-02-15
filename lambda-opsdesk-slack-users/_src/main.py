@@ -66,7 +66,7 @@ def compiling_slack_users_list():
             user['is_admin'] = member['is_admin']
             user['is_owner'] = member['is_owner']
             user['is_restricted'] = member['is_restricted']
-            user['first_name'] = result['profile']['first_name']
+            user['first_name'] = result['profile']['first_name'] if ('first_name' in result['profile'] and result['profile']['first_name'] != '') else ''
             user['is_primary_owner'] = member['is_primary_owner']
             user['is_ultra_restricted'] = member['is_ultra_restricted']
             user['opswaybot_im_channel'] = str(direct_channel_id)

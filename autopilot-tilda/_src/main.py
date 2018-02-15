@@ -28,7 +28,13 @@ def process(event, context):
     return response;
     
     
-def send_data_to_autopilot (formid,email,name=''):    
+def send_data_to_autopilot (formid,email,name=''): 
+    
+    #academy.opsway.com/sell-more-on-shopify
+    if (formid == 'form36227959'):
+        data = {"contact":{"Email":email, "_autopilot_list":"contactlist_6CC3DA9F-3394-4292-8138-74ADEC18DBB2"}}
+        r = requests.post(autopilot_url, json=data, headers = headers)
+        response = r.json();   
     
     #academy.opsway.com/test-your-idea
     if (formid == 'form20008826'):
@@ -53,5 +59,6 @@ def send_data_to_autopilot (formid,email,name=''):
         data = {"contact":{"Email":email, "_autopilot_list":"contactlist_674A3167-5161-4FA4-A8E9-015B78EF2DDC"}}
         r = requests.post(autopilot_url, json=data, headers = headers)
         response = r.json();
-    
+
+    print response
     return response
