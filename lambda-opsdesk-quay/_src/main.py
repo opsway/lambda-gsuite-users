@@ -33,7 +33,7 @@ def get_org_members():
 			members['team'] = team['name']
 			org_members.append(members)
 
-	print org_members
+	return org_members
 
 def get_permissions_for_repos(data):
 	repos = get_org_repos()
@@ -59,20 +59,19 @@ def get_permissions_for_repos(data):
 
 def org_permissions():
 	org_permissions = get_permissions_for_repos('user') + get_permissions_for_repos('team')
-	print org_permissions
+	return org_permissions
 
 
-org_permissions()
-get_org_members()
-# def put_data_to_s3_bucket(payload, key, success_message):
-#     s3 = boto3.resource('s3')
-#     s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(payload))
-#     print success_message
+
+def put_data_to_s3_bucket(payload, key, success_message):
+    s3 = boto3.resource('s3')
+    s3.Bucket(bucket_name).put_object(Key=key, Body=json.dumps(payload))
+    print success_message
 
 
-# def process(event, context):
-#     put_data_to_s3_bucket(org_permissions(), 'Quay_org_permissions.json', 'Uploaded quay org permissions for users and teams')
-#     put_data_to_s3_bucket(get_org_members(), 'Quay_members.json', 'Uploaded quay org memebers')
+def process(event, context):
+    put_data_to_s3_bucket(org_permissions(), 'Quay_org_permissions.json', 'Uploaded quay org permissions for users and teams')
+    put_data_to_s3_bucket(get_org_members(), 'Quay_members.json', 'Uploaded quay org memebers')
 
 
 
