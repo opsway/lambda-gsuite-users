@@ -1,19 +1,21 @@
 import requests
 import os
 import json
+import boto3
 import urllib2
 
 slack_api_path = 'https://slack.com/api/'
-s3_slack_users = 'https://s3.amazonaws.com/opsway-zohobooks-backup/slack_users.json' 
-token = os.environ.get('SLACK_BOT_TOKEN')    
-    
+token = os.environ.get('SLACK_BOT_TOKEN')
+bucket_name = os.environ.get('BUCKET_NAME')
+bucket_key = os.environ.get('BUCKET_KEY')
+s3 = boto3.resource('s3')
+object = s3.Object(bucket_name, bucket_key)
+
 def users_list():
-    req = urllib2.Request(s3_slack_users)
-    opener = urllib2.build_opener()
-    f = opener.open(req)
-    users = json.loads(f.read())
+    response = object.get()
+    users = json.loads(response["Body"].read())
     return users
-    
+
 def im_open(user_id):
     for user in users_list():
         if user_id == user['id']:
