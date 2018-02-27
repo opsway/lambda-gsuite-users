@@ -6,13 +6,22 @@ import urllib2
 
 slack_api_path = 'https://slack.com/api/'
 token = os.environ.get('SLACK_BOT_TOKEN')
+
 bucket_name = os.environ.get('BUCKET_NAME')
 bucket_key = os.environ.get('BUCKET_KEY')
-s3 = boto3.resource('s3')
-object = s3.Object(bucket_name, bucket_key)
+
+access_key = os.environ.get('ACCESS_KEY')
+secret_key = os.environ.get('SECRET_KEY')
+
+client = boto3.client(
+    's3',
+    aws_access_key_id=access_key,
+    aws_secret_access_key=secret_key
+)
+
 
 def users_list():
-    response = object.get()
+    response = client.get_object(Bucket=bucket_name, Key=bucket_key)
     users = json.loads(response["Body"].read())
     return users
 
