@@ -55,13 +55,15 @@ def post_response(groups, response_url):
 		headers = {'content-type': 'application/json'}
 		r = requests.post(response_url, data = json.dumps(response), headers = headers)
 		if (r.status_code != 200):
+			print r
 			raise ValueError('Error while sending data back')
 
 def get_users_in_group(groupname):
-	url = 'group/member?includeInactiveUsers=true&groupname=' + groupname
+	url = 'group/member?includeInactiveUsers=true&startAt=0&maxResults=500&groupname=' + groupname
 	r = requests.get(jira_api_path + url, headers = headers)
 	result = r.json();
 	if (r.status_code != 200):
+		print r
 		raise ValueError('Error retrieving data')
 	users = result['values']
 	users_in_group = []
@@ -74,6 +76,12 @@ def get_available_onduty_groups(username):
 	r = requests.get(jira_api_path + url, headers = headers)
 	result = r.json();
 	if (r.status_code != 200):
+		print jira_api_path
+		print url
+		print headers
+		print r
+		print r.text
+
 		raise ValueError('Error retrieving data')
 		
 	usergroups = result['groups']['items']
@@ -84,7 +92,7 @@ def get_available_onduty_groups(username):
 	return available_groups 
 
 def remove_all_users_from_group(groupname):
-	url = 'group/member?includeInactiveUsers=false&groupname='+groupname   
+	url = 'group/member?includeInactiveUsers=false&startAt=0&maxResults=500&groupname='+groupname   
 	for user in get_results_with_pagination(url):
 		remove_user_from_group(user, groupname)
 
@@ -92,6 +100,12 @@ def remove_user_from_group(user, groupname):
 	url = 'group/user?groupname=' + groupname + '&username=' + user['name']
 	r = requests.delete(jira_api_path + url, headers = headers)
 	if (r.status_code != 200):
+		print jira_api_path
+		print url
+		print headers
+		print r
+		print r.text
+
 		raise ValueError('Error deleting user from group')
 
 def add_user_to_group(username, groupname):
@@ -100,6 +114,12 @@ def add_user_to_group(username, groupname):
 	payload = json.dumps({'name': username})
 	r = requests.post(jira_api_path + url, headers = headers, data=payload)
 	if (r.status_code != 201):
+		print jira_api_path
+		print url
+		print headers
+		print r
+		print r.text
+	
 		raise ValueError('Error adding user to group')
 
 def get_results_with_pagination(url):
@@ -108,6 +128,11 @@ def get_results_with_pagination(url):
 		r = requests.get(jira_api_path + url, headers = headers)
 		result = r.json();
 		if (r.status_code != 200):
+			print jira_api_path
+			print url
+			print headers
+			print r
+			print r.text
 			raise ValueError('Error retrieving data')	
 		values = values + result['values']
 		
